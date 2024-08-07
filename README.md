@@ -21,6 +21,16 @@ xmake r xf_heap_test    # 运行单元测试
 
 ## 运行结果
 
+**例程运行结果**
+```bash
+free_size = 12256
+free_size = 12236
+p = 0x556abe3dc0b0, *p = 123
+min_stack_size = 12256
+free_size = 12256
+```
+
+**单元测试运行结果**
 ```bash
 Unity test run 1 of 1
 .......
