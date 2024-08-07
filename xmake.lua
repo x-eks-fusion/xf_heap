@@ -1,0 +1,20 @@
+add_rules("mode.debug")
+
+add_requires("unity_test")
+
+target("xf_heap_test")
+    set_kind("binary")
+    add_cflags("-Wall")
+    add_defines("UNITY_INCLUDE_CONFIG_H")
+    add_packages("unity_test")
+    add_includedirs("test")
+    add_includedirs("src")
+    add_files("src/*.c")
+    add_files("test/*.c")
+
+target("xf_heap")
+    set_kind("binary")
+    add_includedirs("src")
+    add_files("src/*.c")
+    add_includedirs("example")
+    add_files("example/*.c")
