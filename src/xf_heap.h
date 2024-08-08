@@ -94,9 +94,9 @@ int xf_heap_uninit(void);
 unsigned int xf_heap_get_free_size(void);
 
 /**
- * @brief 获取曾经最小的空闲内存块
+ * @brief 获取曾经剩余最少空闲内存
  *
- * @return unsigned int 内存块大小
+ * @return size_t 空闲内存的字节数
  */
 unsigned int xf_heap_get_min_ever_free_size(void);
 
