@@ -11,6 +11,12 @@
 6. 对OS调用增加 XF_HEAP_LOCK 对内存申请进行保护
 7. C99 标准，无任何依赖（包括libc），方便移植到各个嵌入式代码中
 
+## 开源地址
+
+[github](https://github.com/x-eks-fusion/xf_heap)
+
+[gitee](https://gitee.com/x-eks-fusion/xf_heap)
+
 ## 运行测试
 
 ```bash
