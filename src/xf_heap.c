@@ -101,7 +101,7 @@ void *xf_malloc(unsigned int size)
         res = s_heap.func.malloc(size);
         if (res != (void*) 0) {
             s_heap.free_bytes -= s_heap.func.get_block_size(res);
-            if (s_heap.min_ever_free_bytes_remaining < s_heap.free_bytes) {
+            if (s_heap.min_ever_free_bytes_remaining > s_heap.free_bytes) {
                 s_heap.min_ever_free_bytes_remaining = s_heap.free_bytes;
             }
         }
