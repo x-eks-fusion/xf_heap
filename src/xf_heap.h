@@ -137,7 +137,15 @@ void xf_free(void *pv);
  * @{
  */
 
-int xf_heap_redirect(const xf_heap_api_t *api);
+/**
+ * @brief 重新定义内存管理接口
+ * 
+ * @param api 内存管理接口
+ * @return int 
+ *      - XF_HEAP_FAIL 参数定义错误
+ *      - XF_HEAP_OK 设置成功
+ */
+int xf_heap_api_redirect(const xf_heap_api_t *api);
 
 /**
  * @brief 内存初始化。

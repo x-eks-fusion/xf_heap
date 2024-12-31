@@ -62,7 +62,7 @@ const static xf_heap_api_t _heap_api = {
 
 /* ==================== [Global Functions] ================================== */
 
-int xf_heap_redirect(const xf_heap_api_t *api)
+int xf_heap_api_redirect(const xf_heap_api_t *api)
 {
     if (api == (xf_heap_api_t *)0) {
         return XF_HEAP_FAIL;
@@ -105,7 +105,7 @@ int xf_heap_uninit(void)
     return XF_HEAP_OK;
 }
 
-void *_xf_malloc(unsigned int size)
+void *xf_malloc(unsigned int size)
 {
     if (s_heap_api == (xf_heap_api_t *)0) {
         return (void *) 0;
@@ -114,7 +114,7 @@ void *_xf_malloc(unsigned int size)
     return s_heap_api->malloc(size);
 }
 
-void _xf_free(void *pv)
+void xf_free(void *pv)
 {
     if (s_heap_api == (xf_heap_api_t *)0) {
         return;
@@ -122,7 +122,7 @@ void _xf_free(void *pv)
     s_heap_api->free(pv);
 }
 
-unsigned int _xf_heap_get_free_size(void)
+unsigned int xf_heap_get_free_size(void)
 {
     if (s_heap_api == (xf_heap_api_t *)0) {
         return (unsigned int) -1;
@@ -130,7 +130,7 @@ unsigned int _xf_heap_get_free_size(void)
     return s_heap_api->get_free_size();
 }
 
-unsigned int _xf_heap_get_min_ever_free_size(void)
+unsigned int xf_heap_get_min_ever_free_size(void)
 {
     if (s_heap_api == (xf_heap_api_t *)0) {
         return (unsigned int) -1;

@@ -42,7 +42,7 @@ Unity test run 1 of 1
 .......
 
 -----------------------
-7 Tests 0 Failures 0 Ignored
+6 Tests 0 Failures 0 Ignored
 OK
 ```
 
@@ -66,15 +66,14 @@ void *xf_malloc(size_t size);
 void xf_free(void *pv);
 
 /**
- * @brief 内存初始化
- *
- * @param regions 注册不同内存区域，数组最后一个必须是{}
- *
- * @note 该函数只能在xf_malloc之前调用
+ * @brief 重新定义内存管理接口
  * 
- * @return int 0 设置成功， -1 设置失败 
+ * @param api 内存管理接口
+ * @return int 
+ *      - XF_HEAP_FAIL 参数定义错误
+ *      - XF_HEAP_OK 设置成功
  */
-int xf_heap_init(const xf_heap_region_t *const regions);
+int xf_heap_api_redirect(const xf_heap_api_t *api);
 
 /**
  * @brief 内存反初始化
