@@ -29,6 +29,11 @@ typedef struct _heap_t {
 
 /* ==================== [Static Prototypes] ================================= */
 
+static void *_xf_malloc(unsigned int size);
+static void _xf_free(void *pv);
+static unsigned int _xf_heap_get_free_size(void);
+static unsigned int _xf_heap_get_min_ever_free_size(void);
+
 /* ==================== [Static Variables] ================================== */
 
 /*初始化默认参数*/
@@ -45,22 +50,28 @@ static heap_t s_heap = {
     }
 };
 
+const static xf_heap_api_t *s_heap_api = {0};
+const static xf_heap_api_t _heap_api = {
+    .malloc = _xf_malloc,
+    .free = _xf_free,
+    .get_free_size = _xf_heap_get_free_size,
+    .get_min_ever_free_size = _xf_heap_get_min_ever_free_size
+};
+
 /* ==================== [Macros] ============================================ */
 
 /* ==================== [Global Functions] ================================== */
 
-xf_heap_err_t xf_heap_redirect(xf_alloc_func_t func)
+int xf_heap_redirect(const xf_heap_api_t *api)
 {
-    if (s_heap.init != XF_HEAP_MAGIC_NUM && func.malloc &&
-            func.free && func.init) {
-        s_heap.func.malloc = func.malloc;
-        s_heap.func.free = func.free;
-        s_heap.func.init = func.init;
-        s_heap.func.get_block_size = func.get_block_size;
-        return XF_HEAP_OK;
+    if (api == (xf_heap_api_t *)0) {
+        return XF_HEAP_FAIL;
     }
-    return XF_HEAP_INITED;
+
+    s_heap_api = api;
+    return XF_HEAP_OK;
 }
+
 
 int xf_heap_init(const xf_heap_region_t *const regions)
 {
@@ -73,6 +84,8 @@ int xf_heap_init(const xf_heap_region_t *const regions)
     total_size = s_heap.func.init(regions);
     s_heap.free_bytes = total_size;
     s_heap.min_ever_free_bytes_remaining = total_size;
+
+    s_heap_api = &_heap_api;
 
     return XF_HEAP_OK;
 }
@@ -87,10 +100,47 @@ int xf_heap_uninit(void)
     s_heap.free_bytes = 0;
     s_heap.min_ever_free_bytes_remaining = 0;
 
+    s_heap_api = (xf_heap_api_t *)0;
+
     return XF_HEAP_OK;
 }
 
-void *xf_malloc(unsigned int size)
+void *_xf_malloc(unsigned int size)
+{
+    if (s_heap_api == (xf_heap_api_t *)0) {
+        return (void *) 0;
+    }
+
+    return s_heap_api->malloc(size);
+}
+
+void _xf_free(void *pv)
+{
+    if (s_heap_api == (xf_heap_api_t *)0) {
+        return;
+    }
+    s_heap_api->free(pv);
+}
+
+unsigned int _xf_heap_get_free_size(void)
+{
+    if (s_heap_api == (xf_heap_api_t *)0) {
+        return (unsigned int) -1;
+    }
+    return s_heap_api->get_free_size();
+}
+
+unsigned int _xf_heap_get_min_ever_free_size(void)
+{
+    if (s_heap_api == (xf_heap_api_t *)0) {
+        return (unsigned int) -1;
+    }
+    return s_heap_api->get_min_ever_free_size();
+}
+
+/* ==================== [Static Functions] ================================== */
+
+static void *_xf_malloc(unsigned int size)
 {
     void *res = (void *) 0;
     XF_HEAP_LOCK(s_heap.lock);
@@ -110,7 +160,7 @@ void *xf_malloc(unsigned int size)
     return res;
 }
 
-void xf_free(void *pv)
+static void _xf_free(void *pv)
 {
     XF_HEAP_LOCK(s_heap.lock);
     {
@@ -125,7 +175,7 @@ void xf_free(void *pv)
     XF_HEAP_UNLOCK(s_heap.lock);
 }
 
-unsigned int xf_heap_get_free_size(void)
+static unsigned int _xf_heap_get_free_size(void)
 {
     unsigned int res = 0;
     XF_HEAP_LOCK(s_heap.lock);
@@ -141,7 +191,7 @@ unsigned int xf_heap_get_free_size(void)
     return res;
 }
 
-unsigned int xf_heap_get_min_ever_free_size(void)
+static unsigned int _xf_heap_get_min_ever_free_size(void)
 {
     unsigned int res = 0;
     XF_HEAP_LOCK(s_heap.lock);
@@ -156,5 +206,3 @@ unsigned int xf_heap_get_min_ever_free_size(void)
 
     return res;
 }
-
-/* ==================== [Static Functions] ================================== */

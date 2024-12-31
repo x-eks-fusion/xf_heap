@@ -52,6 +52,10 @@ typedef XF_HEAP_ERR_TYPE xf_heap_err_t;
  *
  */
 
+#ifndef XF_HEAP_FAIL
+#define XF_HEAP_FAIL (-1)
+#endif
+
 #ifndef XF_HEAP_OK
 #define XF_HEAP_OK (0)
 #endif

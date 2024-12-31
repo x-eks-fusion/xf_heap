@@ -66,16 +66,6 @@ void *xf_malloc(size_t size);
 void xf_free(void *pv);
 
 /**
- * @brief 相关申请的函数重定向
- *
- * @param func 重定向的函数
- *
- * @note 该函数只能在未初始化之前调用
-* @return int 0 设置成功， -1 设置失败
- */
-int xf_heap_redirect(xf_alloc_func_t func);
-
-/**
  * @brief 内存初始化
  *
  * @param regions 注册不同内存区域，数组最后一个必须是{}
