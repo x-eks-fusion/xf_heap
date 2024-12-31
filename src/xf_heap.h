@@ -7,12 +7,6 @@
  *
  * @copyright Copyright (c) 2023, CorAL. All rights reserved.
  *
- * @note
- * - 此封装仅用于隔离内存管理算法，方便用户替换。
- * - 通过 xf_heap_redirect() 函数，用户重定向内存管理实现。
- * - 重定向内存管理实现时，必须在自动初始化早期阶段重定向。
- *   (太早)可能没有重定向成功，从而调用默认的内存管理算法 xf_alloc.c.
- *   (太晚)或者已经有别的应用使用了堆内存，之后再重定向的话可能导致内存泄漏等错误。
  */
 #ifndef __XF_HEAP_H__
 #define __XF_HEAP_H__
@@ -85,6 +79,19 @@ typedef struct _xf_alloc_func_t {
     unsigned int (*get_block_size)(void *pv); /*!< 获取内存块的大小 */
 } xf_alloc_func_t;
 
+typedef void *(*xf_malloc_t)(unsigned int size);
+typedef void (*xf_free_t)(void *pv);
+typedef unsigned int (*xf_heap_get_free_size_t)(void);
+typedef unsigned int (*xf_heap_get_min_ever_free_size_t)(void);
+
+typedef struct _xf_heap_api_t {
+    xf_malloc_t malloc;
+    xf_free_t free;
+    xf_heap_get_free_size_t get_free_size;
+    xf_heap_get_min_ever_free_size_t get_min_ever_free_size;
+} xf_heap_api_t;
+
+
 /**
  * End of addtogroup group_xf_heap_port
  * @}
@@ -131,16 +138,14 @@ void xf_free(void *pv);
  */
 
 /**
- * @brief 相关申请的函数重定向。
- *
- * @param func 重定向的函数。
- *
- * @note 该函数只能在未初始化之前调用。
- * @return int
- *      - 0 设置成功
- *      - -1 设置失败
+ * @brief 重新定义内存管理接口
+ * 
+ * @param api 内存管理接口
+ * @return int 
+ *      - XF_HEAP_FAIL 参数定义错误
+ *      - XF_HEAP_OK 设置成功
  */
-xf_heap_err_t xf_heap_redirect(xf_alloc_func_t func);
+int xf_heap_api_redirect(const xf_heap_api_t *api);
 
 /**
  * @brief 内存初始化。
